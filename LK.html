@@ -1,137 +1,142 @@
+
 <!DOCTYPE html>
-<html lang="en">
-	<head>
-		<meta charset="UTF-8">
-		<meta http-equiv="X-UA-Compatible" content="ie=edge">
-		<title>LK - Otaq izləmə</title>
-        <link rel="icon" href="icon.png" type="image/icon type">
-		<style>
-			*{margin:0px;padding:0px;}
-			body{display:flex;font-family:arial;overflow:hidden;}
-			.leftcontent,.rightcontent,.chat{background:#111;width:70%;height:100vh;border:1px solid black;padding:10px;}
-			.tv{width:95%;height:95%;position:relative;left:50%;top:50%;transform:translate(-50%,-50%);border-radius:20px;box-shadow:10px 10px 10px;}
-			.leftcontent{padding:0px;}
-			.rightcontent{width:30%;color:#f1f1f1;display:block;}
-			.rooms{overflow-y:scroll;height:80%;}
-			.room{display:flex;background:#222;font-size:11pt;width:85%;color:#f1f1f1;border-radius:20px;position:relative;margin-top:10px;padding:20px;font-weight:bold;}
-			.room:hover{background:#444;}
-			::-webkit-scrollbar{width:10px;border-radius:10px;}
-			::-webkit-scrollbar-track{background:#f1f1f1;border-radius:10px;}
-			::-webkit-scrollbar-thumb{background:#666;}
-			::-webkit-scrollbar-thumb:hover{background:#444;}
-			input,select{padding:5px;background:#333;color:#f1f1f1;font-size:10pt;width:70px;border-radius:5px;}
-			select{width:100px;}
-			.roomico{width:40px;height:40px;z-index:10;}
-			.roominfo{position:absolute;height:15px;top:50%;left:50%;transform:translate(-50%,-50%);z-index:1;padding:5px;background:#333;border-radius:5px;}
-			.favico{width:30px;height:30px;position:absolute;z-index:10;right:15px;top:50%;transform:translate(0,-50%);}
-			.selected{background:#444;}
-            .hideRooms{background:tomato;width:30px;border-radius:0px;border:none;}
-            .showRooms{background:dodgerblue;width:30px;border-radius:0px;border:none;}
-            .roomtxt{width:200px;}
-		</style>
-		<script>
-			let favtype="",favhtml="",html="",monfav=0;
-			window.addEventListener("load",()=>{
-				localStorage.getItem("favs")==null&&localStorage.getItem("favs")==undefined?localStorage.setItem("favs",""):0;
-				loadRooms();
-			})
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Whowhere</title>
+	<link rel="stylesheet" type="text/css" href="styled.css">
+	<link href="https://fonts.googleapis.com/css2?family=Inter&family=Lato&display=swap" rel="stylesheet">
+</head>
+	<link rel="shortcut icon" type="image/png" href="/botsitesi/ryzex.png"/>
+<body>
+	<header>
+		<h2>Kim hansı otaqda
+</header>
+	<p>Aktiv otaqlar</p>
+	<select id="lg" onchange="f(this.value)">
+		<option value="23">Azerbaycanca</option>
+		<option value="8">Türkçe</option>
+		<option value="2">English</option>
+		<option value="7">Русский</option>
+		<option value="55">Bahasa Melayu</option>
+		<option value="30">Català</option>
+		<option value="31">Dansk</option>
+		<option value="33">Eesti</option>
+		<option value="67">Esperanto</option>
+		<option value="36">Føroyskt</option>
+		<option value="37">Gaeilge</option>
+		<option value="38">Galego</option> 
+		<option value="43">Hrvatski</option> 
+		<option value="46">Íslenska</option>
+		<option value="66">Kurdî</option>
+		<option value="52">Latviešu</option>
+		<option value="50">Lëtzebuergesch</option>
+		<option value="68">Lietuvių</option>
+		<option value="56">Malti</option>
+		<option value="53">Mакедонски</option>
+		<option value="65">Norsk</option>
+		<option value="61">Shqip</option>
+		<option value="59">Slovenščina</option> 
+		<option value="35">Suomi</option>
+		<option value="24">Svenska</option>
+		<option value="62">Türkmen</option> 
+		<option value="64">Yorùbá</option>
+		<option value="32">Ελληνικά</option>
+		<option value="27">Беларуская</option> 
+		<option value="29">Босански</option>
+		<option value="54">Монгол Хэл</option>
+		<option value="60">Српски</option>
+		<option value="63">Українська</option> 
+		<option value="49">Қазақ Tілі</option> 
+		<option value="42">Հայերեն</option> 
+		<option value="41">हिन्दी</option>
+		<option value="28">বাংলা</option>
+		<option value="39">ગુજરાતી</option>
+		<option value="51">ພາສາລາວ</option> 
+		<option value="57">မြန်မာစကား</option>
+		<option value="47">ქართული</option>
+		<option value="25">ኣማርኛ</option>
+		<option value="48">ភាសាខ្មែរ</option>
+	</select>
+	<div class="flex"></div>
+	<footer>
+		<p>Lady | King </p>
+	</footer>
+<script>
+	// by LK, in 2031
+	const fl = document.querySelector('.flex');
 
-			function loadRooms(lng="23"){
-				document.querySelector(".rooms").innerHTML="";
-				favhtml=""
-				html=""
-				fetch("https://gartic.io/req/list?search="+document.querySelector(".searchparam").value+"&language[]="+lng+document.querySelector(".theme").value).then(x=>x.json()).then(x=>{x.forEach(x=>{
-					searchfav(x.code)!=-1?favtype="fav":favtype="unfav";
-					if(favtype=="fav"){
-						favhtml+=`<div onclick="tv(this,'https://gartic.io/`+x.code+`/viewer')" class="room"><img class="roomico" src="https://gartic.io/static/images/subjects/`+x.subject+`.svg">&nbsp;&nbsp;&nbsp;<div class="roominfo">#`+x.code.slice(-3)+` `+x.quant+`/`+x.max+`</div><img onmouseover="monfav=1" onmouseout="monfav=0" onclick="favprocess(this,'`+x.code+`')" src="`+favtype+`.svg" class="favico"></div>`
-					}
-					html+=`<div onclick="tv(this,'https://gartic.io/`+x.code+`/viewer')" class="room"><img class="roomico" src="https://gartic.io/static/images/subjects/`+x.subject+`.svg">&nbsp;&nbsp;&nbsp;<div class="roominfo">#`+x.code.slice(-3)+` `+x.quant+`/`+x.max+`</div><img title="Favori odam" onmouseover="monfav=1" onmouseout="monfav=0" onclick="favprocess(this,'`+x.code+`')" src="`+favtype+`.svg" class="favico"></div>`
-					
-				});document.querySelector(".justfav").checked?document.querySelector(".rooms").innerHTML+=favhtml:document.querySelector(".rooms").innerHTML+=html;})
-			}
+	let roomIds = [];
 
-			function tv(el,x){
-				if(monfav==0){
-					document.querySelectorAll(".room").forEach(x=>x.classList.remove("selected"))
-					el.classList.add("selected");
-					window.onbeforeunload="null";
-					document.querySelector(".tv").setAttribute("src",x)
-                    document.querySelector(".roomtxt").value=x.split("/viewer")[0];
+	function f(lang){
+		fetch('https://gartic.io/req/list?search=&language[]=' + lang)
+		.then(res => res.json())
+		.then(data => {
+			const active = data.filter(room => room.quant > 0);
+			if(active.length != 0){
+				fl.innerHTML = '';
+				for (let k = 0; k < active.length; k++){
+					roomIds.push(active[k].id);
+
+					const flc = document.createElement('div');
+					flc.classList.add('flex-child');
+					fl.appendChild(flc);
+
+					const roomTag = document.createElement('h3');
+					const roomSubjIcon = document.createElement('img');
+					const inRoomPlayers = document.createElement('p');
+					const users = document.createElement('div');
+					const viewBtn = document.createElement('a');
+
+					users.classList.add('users');
+
+					roomTag.innerHTML = active[k].id.slice(1);
+					roomSubjIcon.src = `https://gartic.io/static/images/subjects/${active[k].subject}.svg`;
+					inRoomPlayers.innerHTML = `${active[k].quant} / ${active[k].max} ・ ${active[k].points} / ${active[k].goal}`;
+					viewBtn.href = `https://gartic.io/${active[k].code}/viewer`;
+					viewBtn.innerHTML = 'İzləmək üçün bas';
+					viewBtn.target = '_blank';
+
+					fetch(`https://gartic.io/serverViewer?room=${active[k].code}`).then(rs => rs.text()).then(dt => {
+						const s = dt.slice(15, 16);
+						const ws = new WebSocket(`wss://server0${s}.gartic.io/socket.io/?EIO=3&transport=websocket`);
+
+						ws.onopen = () => {
+							ws.send(`42[12,{"v":20000,"sala":"${roomIds[k]}"}]`);
+						}
+
+						ws.onmessage = (m) => {
+							try{
+								const d = JSON.parse(m.data.slice(2));
+								if(d[0] == 5){
+									for(let i = 0; i < d[5].length; i++){
+										const userB = document.createElement('div');
+										userB.classList.add('user-info');
+										users.appendChild(userB);
+
+										const userPp = document.createElement('img');
+										const userName = document.createElement('p');
+
+										userPp.src = d[5][i].foto ? d[5][i].foto : 'https://gartic.io/static/images/avatar/svg/0.svg';
+										userName.innerHTML = d[5][i].nick;
+
+										userB.append(userPp, userName);
+									}
+								}
+							}
+							catch(err) {
+
+							}
+						}
+					});
+
+					flc.append(roomTag, roomSubjIcon, inRoomPlayers, users, viewBtn);
 				}
-			}
-			function searchfav(x){
-				return localStorage.getItem("favs").indexOf(x)
-			}
-			function addfav(x){
-				searchfav(x)==-1?localStorage.setItem("favs",localStorage.getItem("favs")+x+";"):0
-			}
-			function delfav(x){
-				searchfav(x)!=-1?localStorage.setItem("favs",localStorage.getItem("favs").split(x+";").join("")):0;
-			}
-			function favprocess(x,y){
-				searchfav(y)==-1?addfav(y):delfav(y);
-				searchfav(y)==-1?x.setAttribute("src","unfav.svg"):x.setAttribute("src","fav.svg");
-				
-			}
-		</script>
-	</head>
-	<body>
-		<div class="leftcontent">
-			<iframe class="tv" src="main.html">Bu brauzer dəstəklənmir.</iframe>
-		</div>
-        <input type="submit" class="Otaqları gizlə" value="►" onclick="change(this)">
-		<div class="rightcontent"><br><br>
-			<h2>Otaqlar&nbsp;&nbsp;<span style="font-size:11pt;">Otaq:</span> <input onclick="this.select()" placeholder="Otaq seç" class="roomtxt"><br><input type="text" class="searchparam" placeholder="Axtar" onkeyup="loadRooms(document.querySelector('.lang').value)">
-				<select class="mövzu" onchange="loadRooms(document.querySelector('.lang').value)">
-					<option value="">Theme</option>
-					<option value="&subject[]=30">Digər</option>
-					<option value="&subject[]=28">Anime</option>
-					<option value="&subject[]=1">Ümumi</option>
-					<option value="&subject[]=12">Oyunlar</option>
-					<option value="&subject[]=24">Youtuberlər</option>
-					<option value="&subject[]=11">LoL</option>
-					<option value="&subject[]=2">Heyvanlar</option>
-					<option value="&subject[]=31">Minecraft</option>
-					<option value="&subject[]=4">Yeməklər</option>
-					<option value="&subject[]=9">Çizgi Filmləri</option>
-					<option value="&subject[]=35">Naruto</option>
-                    <option value="&subject[]=16">Bayraqlar</option>
-                    <option value="&subject[]=10">Musiqilər</option>
-                    <option value="&subject[]=17">Futbol</option>
-                    <option value="&subject[]=26">Loqo</option>
-                    <option value="&subject[]=5">Feillər</option>
-                    <option value="&subject[]=33">FNAF</option>
-				</select>
-                <select class="lang" onchange="loadRooms(this.value)">
-					<option value="23">Dillər</option>
-					<option value="23">Azərbaycanca</option>
-                    <option value="8">Türkcə</option>
-                    <option value="2">İngiliscə</option>
-					<option value="4">Fransızca</option>
-                    <option value="7">Rusca</option>
-                    <option value="1">Português</option>
-                    <option value="19">Ərəbcə</option>
-                    <option value="9">Çincə</option>
-				</select>&nbsp;<input type="submit" value="Refresh" onclick="loadRooms(document.querySelector('.lang').value)">
-			</h2><br>Favori Otaqlar:<input onchange="loadRooms()" type="checkbox" class="justfav"><br><br><hr>
-			<div class="rooms">
-				<div class="room"><img class="roomico" src="https://gartic.io/static/images/subjects/1.svg">&nbsp;&nbsp;&nbsp;<div class="otaq məlumatı">#??? ?/?</div></div>
-			</div>
-		</div>
-        <script>
-            function change(x){
-                if(x.getAttribute("class")=="Otaqları gizlə"){
-                    document.querySelector(".rightcontent").style.display="none";
-                    document.querySelector(".leftcontent").style.width="100%";
-                    x.value="◄";
-                    x.setAttribute("class","Otaqları göstər");
-                }else{
-                    document.querySelector(".rightcontent").style.display="block";
-                    document.querySelector(".leftcontent").style.width="70%";
-                    x.value="►";
-                    x.setAttribute("class","Otaqları gizlə");
-                }
-            }
-        </script>
-	</body>
-</html>
+			} else fl.innerHTML = '<h2>Seçdiyiniz dildə aktiv otaq yoxdur.</h2>'
+		});
+	}
+
+	f('23');
+</script>
+</body>
